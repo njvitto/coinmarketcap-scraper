@@ -1,5 +1,3 @@
 *.pyc
-sql/setup.sql
-data
-log
-.pgpass
+*.db
+.DS_Store
