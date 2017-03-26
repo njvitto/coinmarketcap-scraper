@@ -87,21 +87,17 @@ def parseMarketCap(jsonDump, currency):
 	""" """
 	data = []
 	rawData = json.loads(jsonDump)
-	
+		
 	# Covert data in document to wide format
 	dataIntermediate = {}
 	targetFields = [str(key.replace('_data', '')) for key in rawData.keys()]
 	for field, fieldData in rawData.iteritems():
-		if field == 'x_min' or field == 'x_max' or field == 'volume_data':
-			continue
-		targetField = str(field.replace('_data', ''))
 		for row in fieldData:
 			time = int(row[0]/1000)
 			if time not in dataIntermediate:
-				dataIntermediate[time] = dict(zip(
-					targetFields, [None]*len(targetFields)))
-			dataIntermediate[time][targetField] = row[1]
-	
+				dataIntermediate[time] = dict(zip(targetFields, [None]*len(targetFields)))
+			dataIntermediate[time][field] = row[1]
+		
 	# Generate derived data & alter format
 	times = sorted(dataIntermediate.keys())
 	for time in times:
@@ -109,7 +105,9 @@ def parseMarketCap(jsonDump, currency):
 		datum['currency'] = currency
 		datum['time'] = datetime.utcfromtimestamp(time)
 		
-		if (datum['market_cap_by_available_supply'] is not None and datum['price_usd'] is not None):
+		if (datum['market_cap_by_available_supply'] is not None 
+			and datum['price_usd'] is not None
+			and datum['price_usd'] is not 0):
 			datum['est_available_supply'] = float(datum['market_cap_by_available_supply'] / datum['price_usd'])
 		else:
 			datum['est_available_supply'] = None
@@ -117,3 +115,4 @@ def parseMarketCap(jsonDump, currency):
 		data.append(datum)
 	
 	return data
+	

@@ -45,6 +45,5 @@ for currency in currencies:
 		print '-'*60
 		logging.info(">> Could not scrape {0}. Skipping.".format(currency['slug']))
 		continue
-	#logging.info("> Done with scrape of currency {0}.".format(currency['slug']))
 logging.info("Finished scraping currencies. All done.")
 logging.info("Made {0} requests in total.".format(coinmarketcap.countRequested))

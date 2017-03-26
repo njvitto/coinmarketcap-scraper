@@ -28,12 +28,11 @@ class Database:
 			  			"slug CHAR(50) UNIQUE NOT NULL)")
 		self._c.execute("CREATE TABLE IF NOT EXISTS vals ( "
 			  			"id INTEGER PRIMARY KEY, "
-			  			"rank INTEGER, "
-			  			"price_usd DECIMAL NOT NULL, "
-			  			"price_btc DECIMAL NOT NULL, "
-			  			"volume_usd DECIMAL NOT NULL, "
-			  			"market_cap_usd DECIMAL NOT NULL, "
-			  			"available_supply DECIMAL NOT NULL, "
+			  			"price_usd REAL NOT NULL, "
+			  			"price_btc REAL NOT NULL, "
+			  			"volume_usd REAL NOT NULL, "
+			  			"market_cap_usd REAL NOT NULL, "
+			  			"available_supply REAL NOT NULL, "
 			  			"datetime TEXT NOT NULL, "
 			  			"currency_slug CHAR(50) NOT NULL, "
 			  			"FOREIGN KEY(currency_slug) REFERENCES currency(slug) "
@@ -63,8 +62,8 @@ class Database:
 			self._val_entry(entry['currency'].capitalize(),
 							entry['currency'],
 							entry['price_usd'],
-							entry['volume_usd'],
 							entry['price_btc'],
+							entry['volume_usd'],
 							entry['market_cap_by_available_supply'],
 							entry['est_available_supply'],
 							entry['time'])
