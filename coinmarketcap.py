@@ -44,11 +44,13 @@ def requestCurrencyList(view):
 
 def requestMarketCap(slug, timestamp_0, timestamp_1):
 	"""Request market cap data for a given currency slug."""
-	return _request("{0}/v1/datapoints/{1}/{2}/{3}/".format(
-		graphBaseUrl,
-		slug,
-		timestamp_0,
-		timestamp_1))
+	#return _request("{0}/v1/datapoints/{1}/{2}/{3}/".format(
+	#	graphBaseUrl,
+	#	slug,
+	#	timestamp_0,
+	#	timestamp_1))
+	return _request("{0}/v1/datapoints/{1}/".format(
+		graphBaseUrl, slug))
 
 
 def parseCurrencyList(html):
