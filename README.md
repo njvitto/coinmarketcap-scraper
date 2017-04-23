@@ -15,4 +15,4 @@ pip install cssselect lxml psycopg2 requests
 Usage
 =====
 
-Simply run "python scrape.py".
+Simply run `$ python scrape.py`.
