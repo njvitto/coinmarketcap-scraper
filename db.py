@@ -11,17 +11,17 @@ class Database:
 	_path = 'database.db'
 	_conn = None
 	_c = None
-	
-	
+
+
 	def __init__(self):
 		self._conn = sqlite3.connect(self._path)
 		self._c = self._conn.cursor()
 		self._create_tables()
-		
-		
+
+
 	def _create_tables(self):
 		"""Creates the tables.
-		
+
 		Creates the tables coin and vals unless they already exist.
 		"""
 		self._c.execute("CREATE TABLE IF NOT EXISTS coin ( "
@@ -60,8 +60,8 @@ class Database:
 		  					price_usd, price_btc, volume_usd, market_cap_usd,
 		  					available_supply, datetime, slug))
 		self._conn.commit()
-	
-	
+
+
 	def batch_entry(self, data, name, type):
 		for entry in data:
 			self._val_entry(name,

@@ -11,7 +11,7 @@ baseUrl = "http://coinmarketcap.com"
 graphBaseUrl = "http://graphs.coinmarketcap.com"
 
 countRequested = 0
-interReqTime = 1
+interReqTime = 20
 lastReqTime = None
 
 
