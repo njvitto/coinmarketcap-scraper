@@ -11,7 +11,7 @@ baseUrl = "http://coinmarketcap.com"
 graphBaseUrl = "http://graphs.coinmarketcap.com"
 
 countRequested = 0
-interReqTime = 20
+interReqTime = 30
 lastReqTime = None
 
 
@@ -35,29 +35,28 @@ def _request(target):
 
 
 def requestList(type, view):
-    """Request a list of all currencies or assets."""
-    assert(type == "assets" or type == "currencies",
-    	   "Can only request assets or currencies")
+    """Request a list of all coins or tokens."""
+    assert(type == "tokens" or type == "coins",
+        "Can only request tokens or coins")
     return _request("{0}/{1}/views/{2}/".format(
-		baseUrl,
-		type,
-		view))
+        baseUrl,
+        type,
+        view))
 
 
 def requestMarketCap(slug):
-	"""Request market cap data for a given currency slug."""
-	return _request("{0}/currencies/{1}/".format(
-		graphBaseUrl, slug))
+    """Request market cap data for a given coin slug."""
+    return _request("{0}/currencies/{1}/".format(
+        graphBaseUrl, slug))
 
 
 def parseList(html, type):
     """Parse the information returned by requestList for view 'all'."""
-    assert(type == "assets" or type == "currencies",
-    	   "Can only parse assets or currencies")
 
     data = []
 
     docRoot = lxml.html.fromstring(html)
+
     rows = docRoot.cssselect(
         "table#{0}-all > tbody > tr".format(type))
 
@@ -67,9 +66,11 @@ def parseList(html, type):
 
         # Name and slug
         nameField = fields[1].cssselect("a")[0]
+
         datum['name'] = nameField.text_content().strip()
+
         datum['slug'] = nameField.attrib['href'].replace(
-            '/{0}/'.format(type), '').replace('/', '').strip()
+            '/currencies/', '').replace('/', '').strip()
 
         # Symbol
         datum['symbol'] = fields[2].text_content().strip()
@@ -87,34 +88,34 @@ def parseList(html, type):
 
 
 def parseMarketCap(jsonDump, slug):
-	""" """
-	data = []
-	rawData = json.loads(jsonDump)
+    """ """
+    data = []
+    rawData = json.loads(jsonDump)
 
-	# Covert data in document to wide format
-	dataIntermediate = {}
-	targetFields = [str(key.replace('_data', '')) for key in rawData.keys()]
-	for field, fieldData in rawData.iteritems():
-		for row in fieldData:
-			time = int(row[0]/1000)
-			if time not in dataIntermediate:
-				dataIntermediate[time] = dict(zip(targetFields, [None]*len(targetFields)))
-			dataIntermediate[time][field] = row[1]
+    # Covert data in document to wide format
+    dataIntermediate = {}
+    targetFields = [str(key.replace('_data', '')) for key in rawData.keys()]
+    for field, fieldData in rawData.iteritems():
+        for row in fieldData:
+            time = int(row[0]/1000)
+            if time not in dataIntermediate:
+                dataIntermediate[time] = dict(zip(targetFields, [None]*len(targetFields)))
+            dataIntermediate[time][field] = row[1]
 
-	# Generate derived data & alter format
-	times = sorted(dataIntermediate.keys())
-	for time in times:
-		datum = dataIntermediate[time]
-		datum['slug'] = slug
-		datum['time'] = datetime.utcfromtimestamp(time)
+    # Generate derived data & alter format
+    times = sorted(dataIntermediate.keys())
+    for time in times:
+        datum = dataIntermediate[time]
+        datum['slug'] = slug
+        datum['time'] = datetime.utcfromtimestamp(time)
 
-		if (datum['market_cap_by_available_supply'] is not None
-			and datum['price_usd'] is not None
-			and datum['price_usd'] is not 0):
-			datum['est_available_supply'] = float(datum['market_cap_by_available_supply'] / datum['price_usd'])
-		else:
-			datum['est_available_supply'] = None
+        if (datum['market_cap_by_available_supply'] is not None
+            and datum['price_usd'] is not None
+            and datum['price_usd'] is not 0):
+            datum['est_available_supply'] = float(datum['market_cap_by_available_supply'] / datum['price_usd'])
+        else:
+            datum['est_available_supply'] = None
 
-		data.append(datum)
+        data.append(datum)
 
-	return data
+    return data
