@@ -1,10 +1,18 @@
 """ Core scraper for coinmarketcap.com. """
+import argparse
 import db
 import logging
 import coinmarketcap
 import sys
 import time
 import traceback
+
+# Parse min market cap argument
+parser = argparse.ArgumentParser(description='Scrape data from coinmarketcap into local database.')
+parser.add_argument('min_market_cap', metavar='min_cap', type=int, nargs=1,
+                   help='minimum market cap [usd] for currency to be scraped (default: scrape all)')
+
+args = parser.parse_args()
 
 # Configuration
 timestamp_0 = 1367174841000
@@ -14,6 +22,7 @@ logging.basicConfig(
     format='%(asctime)s %(levelname)s: %(message)s',
     datefmt='%m/%d/%Y %I:%M:%S %p')
 
+# Database
 database = db.Database()
 
 
@@ -36,6 +45,8 @@ def scrapeMarketCap(slug, name, type):
     jsonDump = coinmarketcap.requestMarketCap(slug)
     result = coinmarketcap.parseMarketCap(jsonDump, slug)
     database.batch_entry(result, name, type)
+    return result[-1]['market_cap_by_available_supply'] < args.min_market_cap[0]
+
 
 logging.info("Attempting to scrape token list...")
 tokens = scrapeTokenList()
@@ -43,7 +54,9 @@ logging.info("Finished scraping token list. Starting on tokens...")
 for token in tokens:
     logging.info("> Starting scrape of token {0}...".format(token['slug']))
     try:
-        scrapeMarketCap(token['slug'], token['name'], 'token')
+        if scrapeMarketCap(token['slug'], token['name'], 'token'):
+            logging.info("Minimum market cap reached. Stopped scraping tokens.")
+            break
     except Exception as e:
         print '-'*60
         print "Could not scrape token {0}.".format(token['slug'])
@@ -57,7 +70,9 @@ logging.info("Finished scraping coin list. Starting on coins...")
 for coin in coins:
     logging.info("> Starting scrape of coin {0}...".format(coin['slug']))
     try:
-        scrapeMarketCap(coin['slug'], coin['name'], 'coin')
+        if scrapeMarketCap(coin['slug'], coin['name'], 'coin'):
+            logging.info("Minimum market cap reached. Stopped scraping coins.")
+            break
     except Exception as e:
         print '-'*60
         print "Could not scrape coin {0}.".format(coin['slug'])
