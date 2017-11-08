@@ -9,7 +9,7 @@ import traceback
 
 # Parse min market cap argument
 parser = argparse.ArgumentParser(description='Scrape data from coinmarketcap into local database.')
-parser.add_argument('min_market_cap', metavar='min_cap', type=int, nargs=1,
+parser.add_argument('min_market_cap', metavar='min_cap', type=int, nargs='?', default=0,
                    help='minimum market cap [usd] for currency to be scraped (default: scrape all)')
 
 args = parser.parse_args()
@@ -45,7 +45,7 @@ def scrapeMarketCap(slug, name, type):
     jsonDump = coinmarketcap.requestMarketCap(slug)
     result = coinmarketcap.parseMarketCap(jsonDump, slug)
     database.batch_entry(result, name, type)
-    return result[-1]['market_cap_by_available_supply'] < args.min_market_cap[0]
+    return result[-1]['market_cap_by_available_supply'] < args.min_market_cap
 
 
 logging.info("Attempting to scrape token list...")
