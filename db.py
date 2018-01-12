@@ -36,7 +36,7 @@ class Database:
                         "volume_usd REAL NOT NULL, "
                         "market_cap_usd REAL NOT NULL, "
                         "available_supply REAL NOT NULL, "
-                        "datetime TEXT NOT NULL, "
+                        "datetime DATETIME NOT NULL, "
                         "currency_slug CHAR(50) NOT NULL, "
                         "FOREIGN KEY(currency_slug) REFERENCES currency(slug) "
                         "ON DELETE CASCADE ON UPDATE CASCADE)")
