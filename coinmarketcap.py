@@ -8,7 +8,7 @@ import requests
 import time
 
 baseUrl = "http://coinmarketcap.com"
-graphBaseUrl = "http://graphs.coinmarketcap.com"
+graphBaseUrl = "http://graphs2.coinmarketcap.com" #Coinmarket cap endpoint changed from graphs to graphs2
 
 countRequested = 0
 interReqTime = 23
