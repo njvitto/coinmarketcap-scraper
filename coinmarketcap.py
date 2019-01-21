@@ -6,6 +6,7 @@ import lxml.html
 from random import random
 import requests
 import time
+from future.utils import iteritems
 
 baseUrl = "http://coinmarketcap.com"
 graphBaseUrl = "http://graphs2.coinmarketcap.com" #Coinmarket cap endpoint changed from graphs to graphs2
@@ -95,7 +96,7 @@ def parseMarketCap(jsonDump, slug):
     # Covert data in document to wide format
     dataIntermediate = {}
     targetFields = [str(key.replace('_data', '')) for key in rawData.keys()]
-    for field, fieldData in rawData.iteritems():
+    for field, fieldData in iteritems(rawData):
         for row in fieldData:
             time = int(row[0]/1000)
             if time not in dataIntermediate:
