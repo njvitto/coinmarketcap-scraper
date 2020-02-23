@@ -12,7 +12,7 @@ baseUrl = "http://coinmarketcap.com"
 graphBaseUrl = "http://graphs2.coinmarketcap.com" #Coinmarket cap endpoint changed from graphs to graphs2
 
 countRequested = 0
-interReqTime = 23
+interReqTime = 20
 lastReqTime = None
 
 
@@ -58,8 +58,7 @@ def parseList(html, type):
 
     docRoot = lxml.html.fromstring(html)
 
-    rows = docRoot.cssselect(
-        "table#{0}-all > tbody > tr".format(type))
+    rows = docRoot.cssselect("table > tbody > tr")
 
     for row in rows:
         datum = {}
