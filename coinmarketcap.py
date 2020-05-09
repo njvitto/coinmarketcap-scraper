@@ -89,6 +89,7 @@ def parseList(html, type):
 def gatherHistoricalDataFor(coin, start_date, end_date):
     historicaldata = []
     request_string = "https://coinmarketcap.com/currencies/{0}/historical-data/?start={1}&end={2}".format(coin['slug'], start_date, end_date)
+    headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
     logging.info(request_string)
     r  = requests.get(request_string, headers=headers)
     
