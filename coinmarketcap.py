@@ -7,9 +7,10 @@ from random import random
 import requests
 import time
 from future.utils import iteritems
+from bs4 import BeautifulSoup
 
-baseUrl = "http://coinmarketcap.com"
-graphBaseUrl = "http://graphs2.coinmarketcap.com" #Coinmarket cap endpoint changed from graphs to graphs2
+baseUrl = "https://coinmarketcap.com"
+graphBaseUrl = "https://graphs2.coinmarketcap.com" #Coinmarket cap endpoint changed from graphs to graphs2
 
 countRequested = 0
 interReqTime = 20
@@ -50,7 +51,6 @@ def requestMarketCap(slug):
     return _request("{0}/currencies/{1}/".format(
         graphBaseUrl, slug))
 
-
 def parseList(html, type):
     """Parse the information returned by requestList for view 'all'."""
 
@@ -86,6 +86,35 @@ def parseList(html, type):
 
     return data
 
+def gatherHistoricalDataFor(coin, start_date, end_date):
+    historicaldata = []
+    request_string = "https://coinmarketcap.com/currencies/{0}/historical-data/?start={1}&end={2}".format(coin['slug'], start_date, end_date)
+    logging.info(request_string)
+    r  = requests.get(request_string, headers=headers)
+    
+    logging.debug(r.text)
+
+    soup = BeautifulSoup(r.text, "lxml")
+    #unfortunately there are different div with some other css classes and also cmc-table__table-wrapper-outer
+    #table_div = soup.find('div', attrs={ "class" : "cmc-table__table-wrapper-outer"})
+    #if the result contains all the divs with "also" cmc-table__table-wrapper-outer the right table as of now is the 2nd
+    #table = table_div.find_all('table')[2] #much better to point directly to the table
+
+    #a bit cleaner solution, selecting exactly the div with just that class cointaining only the table that we need
+    table = soup.select("div[class='cmc-table__table-wrapper-outer']")[0].table
+
+    #Add table header to list
+    if len(historicaldata) == 0:
+        headers = [header.text for header in table.thead.find_all('th')]
+        headers.insert(0, "Coin")
+
+    for row in table.tbody.find_all('tr'):
+        currentrow = [val.text for val in row.find_all('td')]
+        if(len(currentrow) != 0):
+            currentrow.insert(0, coin)
+        historicaldata.append(currentrow)
+
+    return headers, historicaldata
 
 def parseMarketCap(jsonDump, slug):
     """ """
