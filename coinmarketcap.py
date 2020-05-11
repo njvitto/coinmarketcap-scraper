@@ -64,6 +64,9 @@ def parseList(html, type):
         datum = {}
         fields = row.cssselect("td")
 
+        # Ranking
+        datum['ranking'] = fields[0].text_content().strip()
+
         # Name and slug
         nameField = fields[1].cssselect("a")[0]
 
@@ -93,7 +96,7 @@ def gatherHistoricalDataFor(coin, start_date, end_date):
     logging.info(request_string)
     r  = requests.get(request_string, headers=headers)
     
-    logging.debug(r.text)
+    #logging.debug(r.text)
 
     soup = BeautifulSoup(r.text, "lxml")
     #unfortunately there are different div with some other css classes and also cmc-table__table-wrapper-outer
