@@ -123,7 +123,6 @@ def gatherHistoricalDataFor(coin, start_date, end_date):
     #table = table_div.find_all('table')[2] #much better to point directly to the table
 
     #a bit cleaner solution, selecting exactly the div with just that class cointaining only the table that we need
-    logging.debug(soup.select("div[class='cmc-table__table-wrapper-outer']"))
     table = soup.select("div[class='cmc-table__table-wrapper-outer']")[0].table
 
     #Add table header to list
