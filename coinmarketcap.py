@@ -64,26 +64,44 @@ def parseList(html, type):
         datum = {}
         fields = row.cssselect("td")
 
-        # Ranking
-        datum['ranking'] = fields[0].text_content().strip()
-
         # Name and slug
         nameField = fields[1].cssselect("a")[0]
-
-        datum['name'] = nameField.text_content().strip()
 
         datum['slug'] = nameField.attrib['href'].replace(
             '/currencies/', '').replace('/', '').strip()
 
+        datum['name'] = nameField.text_content().strip()
+
         # Symbol
         datum['symbol'] = fields[2].text_content().strip()
 
-        # Explorer link
-        supplyFieldPossible = fields[5].cssselect("a")
-        if len(supplyFieldPossible) > 0:
-            datum['explorer_link'] = supplyFieldPossible[0].attrib['href']
+        # Ranking
+        datum['ranking'] = fields[0].text_content().strip()
+
+        # Market Cap
+        datum['market_cap'] = fields[3].text_content().strip()
+        # Price
+        priceField = fields[4].cssselect("a")
+        if len(priceField) > 0:
+            datum['price_usd'] = priceField[0].text_content().strip()
+        else:
+            datum['price_usd'] = ''
+        # Supply
+        datum['supply'] = fields[5].text_content().strip()
+        # Volume
+        volumeFieldPossible = fields[6].cssselect("a")
+        if len(volumeFieldPossible) > 0:
+            datum['explorer_link'] = volumeFieldPossible[0].attrib['href']
+            datum['volume'] = volumeFieldPossible[0].text_content().strip()
         else:
             datum['explorer_link'] = ''
+            datum['volume'] = ''
+        # %1h
+        datum['change_1h'] = fields[7].text_content().strip()
+        # %1h
+        datum['change_24h'] = fields[8].text_content().strip()
+        # %1h
+        datum['change_7d'] = fields[9].text_content().strip()
 
         data.append(datum)
 
@@ -95,7 +113,7 @@ def gatherHistoricalDataFor(coin, start_date, end_date):
     headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
     logging.info(request_string)
     r  = requests.get(request_string, headers=headers)
-    
+    #TO DO gestire il caso della risposta 429 (too many requests) #https://stackoverflow.com/questions/22786068/how-to-avoid-http-error-429-too-many-requests-python
     #logging.debug(r.text)
 
     soup = BeautifulSoup(r.text, "lxml")
@@ -105,6 +123,7 @@ def gatherHistoricalDataFor(coin, start_date, end_date):
     #table = table_div.find_all('table')[2] #much better to point directly to the table
 
     #a bit cleaner solution, selecting exactly the div with just that class cointaining only the table that we need
+    logging.debug(soup.select("div[class='cmc-table__table-wrapper-outer']"))
     table = soup.select("div[class='cmc-table__table-wrapper-outer']")[0].table
 
     #Add table header to list
