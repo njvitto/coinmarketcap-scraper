@@ -113,7 +113,8 @@ def gatherHistoricalDataFor(coin, start_date, end_date):
     headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
     logging.info(request_string)
     r  = requests.get(request_string, headers=headers)
-    #TO DO gestire il caso della risposta 429 (too many requests) #https://stackoverflow.com/questions/22786068/how-to-avoid-http-error-429-too-many-requests-python
+    #TO DO gestire il caso della risposta 429 (too many requests) 
+    #https://stackoverflow.com/questions/22786068/how-to-avoid-http-error-429-too-many-requests-python
     #logging.debug(r.text)
 
     soup = BeautifulSoup(r.text, "lxml")
