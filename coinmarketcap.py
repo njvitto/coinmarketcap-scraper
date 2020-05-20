@@ -105,6 +105,8 @@ def parseList(html, type):
 
         data.append(datum)
 
+    logging.debug(data)
+
     return data
 
 def gatherHistoricalDataFor(coin, start_date, end_date):
