@@ -38,8 +38,6 @@ def _request(target):
 
 def requestList(type, view):
     """Request a list of all coins or tokens."""
-    assert(type == "tokens" or type == "coins",
-        "Can only request tokens or coins")
     return _request("{0}/{1}/views/{2}/".format(
         baseUrl,
         type,
@@ -105,7 +103,7 @@ def parseList(html, type):
 
         data.append(datum)
 
-    logging.debug(data)
+    logging.info(data)
 
     return data
 
@@ -114,10 +112,10 @@ def gatherHistoricalDataFor(coin, start_date, end_date):
     request_string = "https://coinmarketcap.com/currencies/{0}/historical-data/?start={1}&end={2}".format(coin['slug'], start_date, end_date)
     headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
     logging.info(request_string)
-    r  = requests.get(request_string, headers=headers)
+    r  = requests.get(request_string, headers=headers, , timeout=(30, 30)) #timeout tuple: the first element being a connect timeout and the second being a read timeout 
     #TO DO gestire il caso della risposta 429 (too many requests) 
     #https://stackoverflow.com/questions/22786068/how-to-avoid-http-error-429-too-many-requests-python
-    #logging.debug(r.text)
+    #logging.info(r.text)
 
     soup = BeautifulSoup(r.text, "lxml")
     #unfortunately there are different div with some other css classes and also cmc-table__table-wrapper-outer
