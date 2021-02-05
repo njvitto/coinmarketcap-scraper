@@ -10,7 +10,7 @@ from future.utils import iteritems
 from bs4 import BeautifulSoup
 
 baseUrl = "https://coinmarketcap.com"
-graphBaseUrl = "https://graphs2.coinmarketcap.com" #Coinmarket cap endpoint changed from graphs to graphs2
+graphBaseUrl = "https://coinmarketcap.com" #Coinmarket cap endpoint changed from graphs to graphs2
 
 countRequested = 0
 interReqTime = 20
