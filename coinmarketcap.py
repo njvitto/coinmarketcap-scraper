@@ -9,6 +9,8 @@ import time
 from future.utils import iteritems
 from bs4 import BeautifulSoup
 
+from cryptocmd import CmcScraper #https://github.com/guptarohit/cryptoCMD
+
 baseUrl = "https://coinmarketcap.com"
 graphBaseUrl = "https://coinmarketcap.com" #Coinmarket cap endpoint changed from graphs to graphs2
 
@@ -108,6 +110,20 @@ def parseList(html, type):
     return data
 
 def gatherHistoricalDataFor(coin, start_date, end_date):
+    scraper = CmcScraper(coin['symbol'], start_date.strftime("%d-%m-%Y"), end_date.strftime("%d-%m-%Y"))
+
+    # get raw data as list of list
+    headers, historicaldata = scraper.get_data()
+    
+    # per ora non mi interessa più salvare il valore di Coin, contiene info che non mi servono nello spread. Ma devo mantenerla per far funzionare il resto e il pregresso già salvato su Google Spreadsheet
+    headers.insert(0, "Coin")
+    for historicaldata_row in historicaldata:
+        historicaldata_row.insert(0, "N/A")
+        
+    return headers, historicaldata
+
+def gatherHistoricalDataForDEPRECATED(coin, start_date, end_date):
+    #   I dati sono scrapati prendendo spunto da qui: https://github.com/dylankilkenny/CoinMarketCap-Historical-Prices/blob/master/crypto_history.py
     historicaldata = []
     request_string = "https://coinmarketcap.com/currencies/{0}/historical-data/?start={1}&end={2}".format(coin['slug'], start_date, end_date)
     headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
